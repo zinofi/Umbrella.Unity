@@ -24,15 +24,13 @@ namespace Umbrella.Unity.Networking.WebRequest
         public event EventHandler<UnityNetworkRequestEventArgs> OnEndRequest;
 
         protected Microsoft.Extensions.Logging.ILogger Log { get; }
-        protected ITaskCompletionSourceProcessor TaskCompletionSourceProcessor { get; }
         protected IUnityAuthenticationAccessor AuthenticationAccessor { get; }
 
-        public UnityNetworkManager(ILoggerFactory loggerFactory,
-            ITaskCompletionSourceProcessor tcsProcessor,
+        public UnityNetworkManager(
+            ILoggerFactory loggerFactory,
             IUnityAuthenticationAccessor authenticationAccessor)
         {
             Log = loggerFactory.CreateLogger<UnityNetworkManager>();
-            TaskCompletionSourceProcessor = tcsProcessor;
             AuthenticationAccessor = authenticationAccessor;
         }
 
@@ -99,13 +97,13 @@ namespace Umbrella.Unity.Networking.WebRequest
 
                 OnBeginRequest?.Invoke(this, eventArgs);
 
-                AsyncOperation op = request.Send();
+                UnityWebRequestAsyncOperation op = request.SendWebRequest();
 
                 if(Log.IsEnabled(LogLevel.Debug))
                     Log.LogDebug("Request.Send");
 
                 TaskCompletionSource<object> tcs = new TaskCompletionSource<object>(eventArgs);
-                TaskCompletionSourceProcessor.Enqueue(tcs, () => op.isDone);
+                op.completed += asyncOp => tcs.SetResult(eventArgs);
 
                 await tcs.Task;
 
