@@ -31,7 +31,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Umbrella.Utilities" Version="2.3.0" />
+    <PackageReference Include="Umbrella.Utilities" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
